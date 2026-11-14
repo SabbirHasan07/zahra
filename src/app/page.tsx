@@ -1,69 +1,69 @@
-import Image from "next/image";
+import Link from "next/link";
+import { BookMarked, BookOpenText, CheckSquare, Droplets, Landmark, MoonStar, ScrollText } from "lucide-react";
+import { PrayerDashboard } from "@/components/prayer-dashboard";
+import { WeatherCard } from "@/components/weather-card";
+import { MasjidCard } from "@/components/masjid-list";
+import { listMasjids } from "@/lib/masjids";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+const LINKS = [
+  { href: "/tracker", title: "নামাজ ট্র্যাকার", desc: "প্রতিদিনের ৫ ওয়াক্ত নামাজের হিসাব রাখুন", Icon: CheckSquare },
+  { href: "/quran", title: "কুরআন মজিদ", desc: "আরবি, উচ্চারণ ও বাংলা অর্থসহ", Icon: BookOpenText },
+  { href: "/hadith", title: "হাদীস ও ব্যাখ্যা", desc: "বুখারী, মুসলিম, তিরমিযী থেকে বাছাই করা হাদীস", Icon: BookMarked },
+  { href: "/guide/wudu", title: "অজুর নিয়ম", desc: "ফরজ, সুন্নত ও ধাপে ধাপে পদ্ধতি", Icon: Droplets },
+  { href: "/guide/ghusl", title: "গোসলের ফরজ", desc: "মৌলিক নিয়ম ও ফরজসমূহ", Icon: ScrollText },
+  { href: "/guide/rakat", title: "ওয়াক্ত অনুযায়ী রাকাত", desc: "ফরজ, সুন্নত, ওয়াজিব ও নফল", Icon: MoonStar },
+  { href: "/guide/tahajjud", title: "তাহাজ্জুদের নিয়ম", desc: "সময়, রাকাত ও পদ্ধতি", Icon: Landmark },
+];
+
+export default async function Home() {
+  const { data } = await listMasjids();
+  const preview = data.slice(0, 2);
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="space-y-8">
+      <PrayerDashboard />
+
+      <div className="grid gap-6 lg:grid-cols-5">
+        <div className="lg:col-span-2">
+          <WeatherCard />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="space-y-4 lg:col-span-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">মসজিদের জামাত</h2>
+            <Link href="/masjids" className="text-sm text-primary hover:underline">সব দেখুন →</Link>
+          </div>
+          {preview.length === 0 ? (
+            <Card>
+              <CardContent className="p-5 text-sm text-muted-foreground">অ্যাডমিন মসজিদ যোগ করলে এখানে জামাতের সময় দেখা যাবে।</CardContent>
+            </Card>
+          ) : (
+            preview.map((m) => <MasjidCard key={m.id} m={m} />)
+          )}
         </div>
-      </main>
+      </div>
+
+      <section>
+        <h2 className="mb-4 text-xl font-semibold">দ্রুত শিখুন ও ব্যবহার করুন</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {LINKS.map(({ href, title, desc, Icon }) => (
+            <Link key={href} href={href} className="group">
+              <Card className="h-full transition-all group-hover:-translate-y-0.5 group-hover:border-primary/50 group-hover:shadow-md">
+                <CardHeader className="flex-row items-center gap-3">
+                  <span className="grid size-11 place-items-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="size-5" />
+                  </span>
+                  <div>
+                    <CardTitle className="text-base">{title}</CardTitle>
+                    <p className="text-sm text-muted-foreground">{desc}</p>
+                  </div>
+                </CardHeader>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
