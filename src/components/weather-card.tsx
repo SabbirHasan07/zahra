@@ -98,7 +98,6 @@ export function WeatherCard() {
                 );
               })}
             </div>
-            <p className="text-[10px] text-muted-foreground">তথ্যসূত্র: Open-Meteo (বিনামূল্যে)</p>
           </div>
         )}
       </CardContent>

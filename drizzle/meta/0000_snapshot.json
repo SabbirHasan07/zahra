@@ -1,0 +1,113 @@
+{
+  "id": "c64fcfd9-b9e6-452d-98b3-6623300e16c9",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.masjids": {
+      "name": "masjids",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "district": {
+          "name": "district",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fajr": {
+          "name": "fajr",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dhuhr": {
+          "name": "dhuhr",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "asr": {
+          "name": "asr",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maghrib": {
+          "name": "maghrib",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "isha": {
+          "name": "isha",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "jummah": {
+          "name": "jummah",
+          "type": "varchar(5)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

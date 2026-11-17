@@ -52,7 +52,6 @@ export function PrayerDashboard() {
 
   const todayKey = now ? dayKey(now) : "";
 
-  // fetch timings whenever location or calendar day changes => times update automatically
   useEffect(() => {
     if (!todayKey) return;
     const ctrl = new AbortController();
@@ -86,6 +85,25 @@ export function PrayerDashboard() {
     return null;
   }, [today, tomorrow, now]);
 
+  // প্রতিটি ওয়াক্তের সময়সীমা (শুরু - শেষ) বের করার ফাংশন
+  const getPrayerRange = (key: PrayerKey): string | null => {
+    if (!today) return null;
+    const start = toBn(format12(today.times[key]));
+
+    const endMap: Partial<Record<PrayerKey, string | undefined>> = {
+      fajr: today.times.sunrise,
+      dhuhr: today.times.asr,
+      asr: today.times.maghrib,
+      maghrib: today.times.isha,
+      isha: tomorrow?.times.fajr, // এশার শেষ সময় পরদিন ফজরের আগ পর্যন্ত
+    };
+
+    const endTime = endMap[key];
+    if (!endTime) return null; // সূর্যোদয়ের কোনো রেঞ্জ নেই
+
+    return `${start} – ${toBn(format12(endTime))}`;
+  };
+
   const nowDate = now ?? new Date(0);
   const dateLine = now ? `${BN_WEEKDAY[now.getDay()]}, ${toBn(now.getDate())} ${BN_MONTH[now.getMonth()]} ${toBn(now.getFullYear())}` : "";
   const hijriLine = today ? `${toBn(today.hijri.day)} ${hijriMonthBn(today.hijri.monthEn, today.hijri.monthAr)} ${toBn(today.hijri.year)} হিজরি` : "";
@@ -117,7 +135,11 @@ export function PrayerDashboard() {
             <p className="font-mono text-4xl font-semibold tabular-nums sm:text-5xl" suppressHydrationWarning>
               {next && now ? toBn(formatCountdown(next.at.getTime() - now.getTime())) : "--:--:--"}
             </p>
-            <p className="mt-1 text-sm text-white/70">{next ? `${format12(`${String(next.at.getHours()).padStart(2, "0")}:${String(next.at.getMinutes()).padStart(2, "0")}`)} — ${place.name}` : place.name}</p>
+            <p className="mt-1 text-sm text-white/70">
+              {next
+                ? `${format12(`${String(next.at.getHours()).padStart(2, "0")}:${String(next.at.getMinutes()).padStart(2, "0")}`)} — ${place.name}`
+                : place.name}
+            </p>
           </div>
         </div>
         <p className="mt-6 text-xs text-white/50" suppressHydrationWarning>এখন: {timeLine}</p>
@@ -130,26 +152,39 @@ export function PrayerDashboard() {
           const Icon = ICONS[key];
           const isNext = next?.key === key;
           const time = today?.times[key];
+          const range = getPrayerRange(key);
           const passed = !!(today && now && toDate(nowDate, today.times[key]).getTime() <= nowDate.getTime());
+
           return (
             <Card
               key={key}
-              className={`transition-all ${isNext ? "border-primary ring-2 ring-primary/40 shadow-lg" : ""} ${passed && !isNext ? "opacity-60" : ""}`}
+              className={`transition-all ${isNext ? "border-primary ring-2 ring-primary/40 shadow-lg" : ""} ${
+                passed && !isNext ? "opacity-60" : ""
+              }`}
             >
               <CardContent className="flex flex-col items-center gap-1 p-4 text-center">
                 <Icon className={`size-5 ${isNext ? "text-gold" : "text-primary"}`} />
                 <p className="font-semibold">{PRAYER_META[key].bn}</p>
                 <p className="font-arabic text-sm text-muted-foreground">{PRAYER_META[key].ar}</p>
+                
+                {/* মূল শুরুর সময় */}
                 <p className="mt-1 text-lg font-bold tabular-nums">{time ? toBn(format12(time)) : "…"}</p>
-                {key !== "sunrise" && FARD_ORDER.includes(key) && <span className="text-[10px] text-muted-foreground">ফরজ ওয়াক্ত</span>}
+                
+                {/* ওয়াক্তের সময়সীমা (Range) */}
+                {range && (
+                  <p className="mt-0.5 rounded-md bg-muted px-2 py-0.5 text-[11px] font-medium tabular-nums text-muted-foreground">
+                    {range}
+                  </p>
+                )}
+
+                {key !== "sunrise" && FARD_ORDER.includes(key) && (
+                  <span className="mt-1 text-[10px] text-muted-foreground">ফরজ ওয়াক্ত</span>
+                )}
               </CardContent>
             </Card>
           );
         })}
       </div>
-      <p className="text-xs text-muted-foreground">
-        সময়সূচি: Aladhan API (University of Islamic Sciences, Karachi · হানাফি আসর)। প্রতিদিন ও স্থান পরিবর্তনে স্বয়ংক্রিয়ভাবে আপডেট হয়।
-      </p>
     </section>
   );
 }
